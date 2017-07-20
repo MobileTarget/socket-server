@@ -1,5 +1,6 @@
 module.exports = function(io){
 	var numUsers = 0;
+	var connectedUsers = {};
 	io.on('connection', function (socket) {
 		var addedUser = false;
 
@@ -46,19 +47,44 @@ module.exports = function(io){
 	  
 		// when the user disconnects.. perform this
 		socket.on('disconnect', function () {
-		  if (addedUser) {
-			--numUsers;
-	  
-			// echo globally that this client has left
-			socket.broadcast.emit('user left', {
-			  username: socket.username,
-			  numUsers: numUsers
-			});
-		  }
+			if (addedUser) {
+			  --numUsers;
+		
+			  // echo globally that this client has left
+			  socket.broadcast.emit('user left', {
+				username: socket.username,
+				numUsers: numUsers
+			  });
+			}
+			
+			//following code is used for todooffline app.
+			if(socket.user_id) {
+				delete connectedUsers[socket.user_id]  ;
+				console.log(`Socket is going to disconnect.`);
+			}
+		});
+		
+		socket.on('$onAppResume$event', function(obj){
+			console.log("Resume Event triggered  >>>>>", obj);
+			if(connectedUsers[obj.id]){
+				console.log(`User is already connected with SocketId ${obj.id}.`);
+			}else{
+				socket.user_id = obj.id;
+				connectedUsers[obj.id] = socket;
+				console.log(`User is going to connect with SocketId ${obj.id}`);
+			}
 		});
 
-
-		//todooffline app events are listed below
+		socket.on('$onAppPause$event', function(obj){
+			console.log("Pause Event triggered  >>>>>", obj);
+			if(connectedUsers[obj.id]){
+				console.log(`User is going to offline with the SocketId ${obj.id}.`);
+				delete connectedUsers[obj.id];	
+			}else{
+				console.log(`User ${obj.id} is already dis-connected.`);
+			}
+		});
+		
 		socket.on('$typing$event', function(data){
 			socket.broadcast.emit('$typing$event', data);
 		});
@@ -69,6 +95,6 @@ module.exports = function(io){
 
 		socket.on('$push$message$event', function(data){
 			socket.broadcast.emit('$push$message$event', data);
-		})
+		});
 	});
 };
