@@ -1,4 +1,4 @@
-# Node.js Hello World Sample
+# Node.js Socket server with sample chat application.
 
 This application demonstrates a simple, reusable Node.js web application based on the Express framework.
 
@@ -8,6 +8,6 @@ This application demonstrates a simple, reusable Node.js web application based o
 1. cd into this project's root directory
 1. Run `npm install` to install the app's dependencies
 1. Run `npm start` to start the app
-1. Access the running app in a browser at <http://localhost:6001>
+1. Access the running app in a browser at <http://localhost:6005>
 
 [Install Node.js]: https://nodejs.org/en/download/
