@@ -96,7 +96,7 @@ app.post("/send_push_notification", function(req, res) {
 const server = http.createServer(app),
 socket = require('socket.io')(server);
 require('./socket')(socket);
-appEnv.port = 6050;
+//appEnv.port = 6050;
 server.listen(appEnv.port, '0.0.0.0', function() {
 console.log("Server listening at:" + appEnv.url);
 });
